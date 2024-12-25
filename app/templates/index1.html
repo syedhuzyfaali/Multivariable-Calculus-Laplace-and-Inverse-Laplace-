@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverse Laplace Transform Solver</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/11c774c261.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-lg">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">
+            Inverse Laplace Transform Solver
+        </h1>
+        <form id="laplaceForm">
+            <label for="laplaceInput" class="block text-gray-700 font-medium mb-2">
+                Enter Laplace Function (F(s)):
+            </label>
+            <textarea id="laplaceInput" placeholder="Example: 1 / (s**2 + s + 1)"
+                class="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"></textarea>
+
+            <!-- <div class="flex flex-wrap gap-2 mb-4">
+                <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+                    onclick="insertText('1 / (s^2 + 1)')">Fraction</button>
+                <button type="button" class="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
+                    onclick="insertText('exp(-s)')">Exponential</button>
+                <button type="button" class="bg-yellow-500 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-600"
+                    onclick="insertText('s^2 + 2*s + 1')">Polynomial</button>
+                <button type="button" class="bg-purple-500 text-white px-4 py-2 rounded-md shadow hover:bg-purple-600"
+                    onclick="insertText('sqrt(s)')">Square Root</button>
+                <button type="button" class="bg-indigo-500 text-white px-4 py-2 rounded-md shadow hover:bg-indigo-600"
+                    onclick="insertText('sin(s)')">Sine</button>
+                <button type="button" class="bg-pink-500 text-white px-4 py-2 rounded-md shadow hover:bg-pink-600"
+                    onclick="insertText('cos(s)')">Cosine</button>
+            </div> -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button type="button"
+                    class="bg-blue-500 text-white flex items-center px-4 py-2 rounded-md shadow hover:bg-blue-600"
+                    onclick="insertText('1 / (s^2 + 1)')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+                    </svg>
+                    Fraction
+                </button>
+                <button type="button"
+                    class="bg-green-500 text-white flex items-center px-4 py-2 rounded-md shadow hover:bg-green-600"
+                    onclick="insertText('exp(-s)')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Exponential
+                </button>
+                <button type="button"
+                    class="bg-yellow-500 text-white flex items-center px-4 py-2 rounded-md shadow hover:bg-yellow-600"
+                    onclick="insertText('s^2 + 2*s + 1')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h4l3-7 6 18 4-10h4" />
+                    </svg>
+                    Polynomial
+                </button>
+                <button type="button"
+                    class="bg-purple-500 text-white flex items-center px-4 py-2 rounded-md shadow hover:bg-purple-600"
+                    onclick="insertText('sqrt(s)')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 16l4-8m0 0l4 8m-4-8v8" />
+                    </svg>
+                    Square Root
+                </button>
+                <button type="button"
+                    class="bg-indigo-500 text-white flex items-center px-4 py-2 rounded-md shadow hover:bg-indigo-600"
+                    onclick="insertText('sin(s)')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14.828 14.828a4 4 0 005.657-5.656m-1.414 8.485A8 8 0 116.343 6.343M9.172 9.172a4 4 0 015.656 5.656" />
+                    </svg>
+                    Sine
+                </button>
+                <button type="button"
+                    class="bg-pink-500 text-white flex items-center px-4 py-2 rounded-md shadow hover:bg-pink-600"
+                    onclick="insertText('cos(s)')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H6m4 6H6m4 6H6m12-6h-4m4 6h-4" />
+                    </svg>
+                    Cosine
+                </button>
+            </div>
+            <button type="button"
+                class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md shadow hover:bg-blue-700"
+                onclick="solveLaplace()">Compute Inverse</button>
+        </form>
+
+        <div class="mt-6 p-4 border rounded-md bg-gray-50 shadow hidden" id="resultBox">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Result:</h3>
+            <p id="result" class="text-gray-700"></p>
+        </div>
+    </div>
+
+    <script>
+        function insertText(text) {
+            const input = document.getElementById('laplaceInput');
+            input.value += text;
+        }
+
+        async function solveLaplace() {
+            const laplaceInput = document.getElementById('laplaceInput').value;
+            const resultBox = document.getElementById('resultBox');
+            const result = document.getElementById('result');
+
+            try {
+                const response = await fetch('/solve-laplace/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ function: laplaceInput }),
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    result.textContent = data.result;
+                    resultBox.classList.remove('hidden');
+                } else {
+                    result.textContent = `Error: ${data.error}`;
+                    resultBox.classList.remove('hidden');
+                }
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                resultBox.classList.remove('hidden');
+                console.log(error.message);
+            }
+        }
+    </script>
+</body>
+
+</html>

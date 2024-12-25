@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverse Laplace Transform Solver</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white shadow-md rounded-lg p-6 w-8/12 flex">
+        <!-- Sidebar with buttons -->
+        <div class="flex flex-col gap-4 mr-6 w-80">
+            <button type="button"
+                class="bg-purple-500 text-white flex items-center px-4 py-2 h-20 shadow hover:bg-purple-900"
+                onclick="solveOriginal()">
+                Original &nbsp; \(F(n)\)
+            </button>
+            <button type="button"
+                class="bg-purple-500 text-white flex items-center px-4 py-2 h-20 shadow hover:bg-purple-900"
+                onclick="solveFirstOrderDerivative()">
+                1st Order Derivative \(F'(n)\)
+            </button>
+            <button type="button"
+                class="bg-purple-500 text-white flex items-center px-4 py-2 h-20 shadow hover:bg-purple-900"
+                onclick="solveSecondOrderDerivative()">
+                2nd Order Derivative \(F''(n)\)
+            </button>
+
+            <button type="button"
+                class="bg-purple-500 text-white flex items-center px-4 py-2 h-20 shadow hover:bg-purple-900"
+                onclick="solveIntegration()">
+                Integral &nbsp; \(\int F(n) dn\)
+            </button>
+        </div>
+        <div class="flex-grow">
+            <h1 class="text-4xl font-semilight text-gray-800 mb-4 text-center">
+                Inverse Laplace Transform Solver
+            </h1>
+            <hr class="border-gray-300 border">
+            <br>
+            <form id="laplaceForm" class="grid grid-cols-4 gap-4">
+                <div class="col-span-3">
+                    <label for="laplaceInput" class="block text-gray-700 font-medium mb-2">
+                        Enter Normal Function \(F(t)\):
+                    </label>
+                    <textarea id="laplaceInput" placeholder="Example: t**2 + t + 1"
+                        class="w-full p-2 border border-black  mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows="1"></textarea>
+                </div>
+                <!-- <div>
+                    <label for="a" class="block text-gray-700 font-medium mb-2">
+                        \(a\)&nbsp;:
+                    </label>
+                    <textarea id="a" placeholder="Example: 2"
+                        class="w-full p-2 border border-black  mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows="1"></textarea>
+                </div> -->
+
+            </form>
+           
+            <div class="mt-6 p-4 border rounded-md bg-gray-50 shadow hidden" id="resultBoxFunction">
+                <h3 id="headingFunction" class="text-lg font-bold text-gray-800 mb-2">Function Double Prime Result:</h3>
+                <p id="resultFunction" class="text-gray-700 text-4xl"></p>
+            </div>
+            <div class="mt-6 p-4 border rounded-md bg-gray-50 shadow hidden" id="resultBoxLaplace">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Laplace Result:</h3>
+                <p id="resultLaplace" class="text-gray-700 text-4xl"></p>
+            </div>
+            <div class="mt-6 p-4 border rounded-md bg-gray-50 shadow hidden" id="resultBoxInverse">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Inverse Laplace Result:</h3>
+                <p id="resultInverse" class="text-gray-700 text-4xl"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function insertText(text) {
+            const input = document.getElementById('laplaceInput');
+            input.value += text;
+        }
+
+        async function solveOriginal() {
+            const laplaceInput = document.getElementById('laplaceInput').value;
+            const resultBoxLaplace = document.getElementById('resultBoxLaplace');
+            const resultLaplace = document.getElementById('resultLaplace');
+            const resultBoxInverse = document.getElementById('resultBoxInverse');
+            const resultInverse = document.getElementById('resultInverse');
+
+            const resultBoxFunction = document.getElementById('resultBoxFunction');
+
+            try {
+                const response = await fetch('/original-function/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ function: laplaceInput }),
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update the result in symbolic form
+                    resultLaplace.innerHTML = `\\(${data.laplace_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxLaplace.classList.remove('hidden');
+
+                    resultInverse.innerHTML = `\\(${data.inverse_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxInverse.classList.remove('hidden');
+                    resultBoxFunction.classList.add('hidden');
+                } else {
+                    result.textContent = `Error: ${data.error}`;
+                    resultBox.classList.remove('hidden');
+                }
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                resultBox.classList.remove('hidden');
+            }
+        }
+
+        async function solveFirstOrderDerivative() {
+            const laplaceInput = document.getElementById('laplaceInput').value;
+            
+            const resultBoxFunction = document.getElementById('resultBoxFunction');
+            const resultFunction = document.getElementById('resultFunction');
+            const headingFunction = document.getElementById('headingFunction'); 
+
+
+            const resultBoxLaplace = document.getElementById('resultBoxLaplace');
+            const resultLaplace = document.getElementById('resultLaplace');
+            const resultBoxInverse = document.getElementById('resultBoxInverse');
+            const resultInverse = document.getElementById('resultInverse');
+
+
+            try {
+                const response = await fetch('/first-order-derivative/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ function: laplaceInput }),
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update the result in symbolic form
+                    resultLaplace.innerHTML = `\\(${data.f_prime_s_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxLaplace.classList.remove('hidden');
+
+                    resultInverse.innerHTML = `\\(${data.f_prime_s_inverse_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxInverse.classList.remove('hidden');
+
+                    resultFunction.innerHTML = `\\(${data.F_prime_t_result}\\)`; // MathJax syntax for inline math
+                    headingFunction.innerHTML = `First Order Derivative \\\(\\frac{d}{dt})\\\)`; 
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxFunction.classList.remove('hidden');
+                } else {
+                    result.textContent = `Error: ${data.error}`;
+                    resultBox.classList.remove('hidden');
+                }
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                resultBox.classList.remove('hidden');
+            }
+        }
+       
+       
+        async function solveSecondOrderDerivative() {
+            const laplaceInput = document.getElementById('laplaceInput').value;
+           
+            const resultBoxFunction = document.getElementById('resultBoxFunction');
+            const resultFunction = document.getElementById('resultFunction');
+            const headingFunction = document.getElementById('headingFunction'); 
+
+            const resultBoxLaplace = document.getElementById('resultBoxLaplace');
+            const resultLaplace = document.getElementById('resultLaplace');
+            const resultBoxInverse = document.getElementById('resultBoxInverse');
+            const resultInverse = document.getElementById('resultInverse');
+
+
+            try {
+                const response = await fetch('/second-order-derivative/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ function: laplaceInput }),
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update the result in symbolic form
+                    resultLaplace.innerHTML = `\\(${data.f_prime_s_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxLaplace.classList.remove('hidden');
+
+                    resultInverse.innerHTML = `\\(${data.f_prime_s_inverse_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxInverse.classList.remove('hidden');
+
+                    resultFunction.innerHTML = `\\(${data.F_prime_t_result}\\)`; // MathJax syntax for inline math
+                    headingFunction.innerHTML = `Second Order Derivative \\\(\\frac{d^2}{dt^2})\\\)`; 
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxFunction.classList.remove('hidden');
+                } else {
+                    result.textContent = `Error: ${data.error}`;
+                    resultBox.classList.remove('hidden');
+                }
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                resultBox.classList.remove('hidden');
+            }
+        }
+        
+        async function solveIntegration() {
+            const laplaceInput = document.getElementById('laplaceInput').value;
+           
+            const resultBoxFunction = document.getElementById('resultBoxFunction');
+            const resultFunction = document.getElementById('resultFunction');
+            const headingFunction = document.getElementById('headingFunction'); 
+
+            const resultBoxLaplace = document.getElementById('resultBoxLaplace');
+            const resultLaplace = document.getElementById('resultLaplace');
+            const resultBoxInverse = document.getElementById('resultBoxInverse');
+            const resultInverse = document.getElementById('resultInverse');
+
+
+            try {
+                const response = await fetch('/integration-property/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ function: laplaceInput }),
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update the result in symbolic form
+                    resultLaplace.innerHTML = `\\(${data.f_prime_s_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxLaplace.classList.remove('hidden');
+
+                    resultInverse.innerHTML = `\\(${data.f_prime_s_inverse_result}\\)`; // MathJax syntax for inline math
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxInverse.classList.remove('hidden');
+
+                    resultFunction.innerHTML = `\\(${data.F_prime_t_result}\\)`; // MathJax syntax for inline math
+                    headingFunction.innerHTML = `Laplace Transform of \\\(F(t) :\\\)`; 
+                    MathJax.typesetPromise(); // Re-render MathJax
+                    resultBoxFunction.classList.remove('hidden');
+                } else {
+                    result.textContent = `Error: ${data.error}`;
+                    resultBox.classList.remove('hidden');
+                }
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                resultBox.classList.remove('hidden');
+            }
+        }
+
+    </script>
+</body>
+
+</html>
